@@ -1,4 +1,6 @@
-![](http://i.imgur.com/3uwThuK.png)
+<p align="center">
+  <img src="http://i.imgur.com/3uwThuK.png)">
+</p>
 
 # JWTea
 
