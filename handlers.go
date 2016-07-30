@@ -15,25 +15,21 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		Message: "OK",
 		Payload: struct{}{},
 	}
-	resBody, err := message.ToBytes()
-	if err != nil {
-		ErrorResponse(http.StatusBadRequest, "Failed to find status!", w)
-	} else {
-		Response(http.StatusOK, resBody, w)
-	}
+	message.Send(w)
 }
 
 // CreateToken that creates a new token
 func CreateToken(w http.ResponseWriter, r *http.Request) {
-	var postBody interface{}
+	// parse post body
+	var incomingBody interface{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		ErrorResponse(http.StatusBadRequest, "Failed to read body!", w)
 	}
 	// create token based on the post body as claims
-	json.Unmarshal(body, &postBody)
+	json.Unmarshal(body, &incomingBody)
 	tokenHelper := Token{
-		postBody,
+		incomingBody,
 		jwt.StandardClaims{
 			ExpiresAt: 15000,
 		},
@@ -42,7 +38,7 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ErrorResponse(http.StatusBadRequest, "Failed to create token!", w)
 	}
-	// Generate request message payload
+	// generate request message payload
 	resMessage := Message{
 		Success: true,
 		Message: "Created Token!",
@@ -51,10 +47,5 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 			Expiry: tokenHelper.ExpiresAt,
 		},
 	}
-	resBody, err := resMessage.ToBytes()
-	if err != nil {
-		ErrorResponse(http.StatusBadRequest, "Failed to send token!", w)
-	} else {
-		Response(http.StatusOK, resBody, w)
-	}
+	resMessage.Send(w)
 }

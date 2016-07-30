@@ -8,7 +8,7 @@ import (
 
 const signingString = "SIGN_STRING"
 
-// TokenResponse response object for the payload of a message
+// TokenResponse token response object for the payload of a Message
 type TokenResponse struct {
 	Token  string `json:"token"`
 	Expiry int64  `json:"expiry"`
