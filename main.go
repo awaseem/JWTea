@@ -12,5 +12,6 @@ func main() {
 	r := mux.NewRouter()
 	println("Running on localhost:" + port)
 	r.HandleFunc("/status", SetHeaders(Status)).Methods("GET")
+	r.HandleFunc("/create", SetHeaders(CreateToken)).Methods("POST")
 	println(http.ListenAndServe(":"+port, r))
 }
