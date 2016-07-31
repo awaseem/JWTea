@@ -36,11 +36,17 @@ func ErrorResponse(errCode int, errMessage string, w http.ResponseWriter) {
 		Payload: struct{}{},
 	}.ToBytes()
 	w.WriteHeader(errCode)
-	w.Write(body)
+	_, err := w.Write(body)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Response set the body and status code
 func Response(statusCode int, body []byte, w http.ResponseWriter) {
 	w.WriteHeader(statusCode)
-	w.Write(body)
+	_, err := w.Write(body)
+	if err != nil {
+		panic(err)
+	}
 }

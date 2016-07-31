@@ -29,7 +29,10 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// create token based on the post body as claims
-	json.Unmarshal(body, &incomingBody)
+	if err := json.Unmarshal(body, &incomingBody); err != nil {
+		ErrorResponse(http.StatusBadRequest, "Failed to prase body into json!", w)
+		return
+	}
 	tokenHelper := Token{
 		incomingBody,
 		jwt.StandardClaims{
@@ -60,9 +63,13 @@ func DecodeToken(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		ErrorResponse(http.StatusBadRequest, "Failed to read body!", w)
+		return
 	}
 	// parse the token
-	json.Unmarshal(body, &incomingToken)
+	if err := json.Unmarshal(body, &incomingToken); err != nil {
+		ErrorResponse(http.StatusBadRequest, "Failed to prase body into json!", w)
+		return
+	}
 	var parsedToken Token
 	if err := parsedToken.Decode(incomingToken.Token); err != nil {
 		ErrorResponse(http.StatusBadRequest, "Failed to parse token!", w)

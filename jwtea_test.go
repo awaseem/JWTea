@@ -41,7 +41,9 @@ func TestCreateToken(t *testing.T) {
 		Payload TokenResponse
 	}
 	body, _ := ioutil.ReadAll(res.Body)
-	json.Unmarshal(body, &tokenRes)
+	if err := json.Unmarshal(body, &tokenRes); err != nil {
+		t.Errorf("Unexpected error occured when creating json!")
+	}
 
 	if res.StatusCode != 200 {
 		t.Errorf("Success expected: %d", res.StatusCode) //Uh-oh this means our test failed
@@ -62,7 +64,9 @@ func TestDecodeToken(t *testing.T) {
 
 	var decodeRes Message
 	body, _ := ioutil.ReadAll(res.Body)
-	json.Unmarshal(body, &decodeRes)
+	if err := json.Unmarshal(body, &decodeRes); err != nil {
+		t.Errorf("Unexpected error occured when creating json!")
+	}
 
 	if res.StatusCode != 200 {
 		t.Errorf("Success expected: %d", res.StatusCode) //Uh-oh this means our test failed
