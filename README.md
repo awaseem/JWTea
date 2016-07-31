@@ -4,6 +4,8 @@
 
 # JWTea
 
+[![Build Status](https://travis-ci.org/awaseem/JWTea.svg?branch=master)](https://travis-ci.org/awaseem/JWTea) [![Go Report Card](https://goreportcard.com/badge/github.com/awaseem/jwtea)](https://goreportcard.com/report/github.com/awaseem/jwtea)
+
 Simple HTTP service to create and parse JWT tokens.
 
 ## Create
