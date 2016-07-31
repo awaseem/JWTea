@@ -11,8 +11,8 @@ services:
 before_install:
     - sleep 15
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o jwtea
 after_success:
+    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o jwtea
     - sleep 5
     - docker build -t awaseem/jwtea:$TRAVIS_BRANCH-$TRAVIS_GO_VERSION .
     - sleep 5
