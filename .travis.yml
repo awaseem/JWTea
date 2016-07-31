@@ -1,0 +1,16 @@
+sudo: false
+language: go
+go:
+    - "tip"
+services:
+    - docker
+before_install:
+    - sleep 15
+    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o jwtea
+after_success:
+    - sleep 5
+    - docker build -t awaseem/jwtea:$TRAVIS_BRANCH-$TRAVIS_GO_VERSION .
+    - sleep 5
+    - docker push awaseem/jwtea:$TRAVIS_BRANCH-$TRAVIS_GO_VERSION
+    - docker logout
