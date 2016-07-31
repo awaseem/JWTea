@@ -10,7 +10,7 @@ services:
     - docker
 before_install:
     - sleep 15
-    - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 after_success:
     - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o jwtea
     - sleep 5
