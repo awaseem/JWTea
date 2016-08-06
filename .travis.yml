@@ -1,0 +1,23 @@
+sudo: false
+language: go
+go:
+    - 1.6
+install:
+  - go get github.com/gorilla/mux
+  - go get github.com/gorilla/context
+  - go get github.com/dgrijalva/jwt-go
+  - go get github.com/peterbourgon/diskv
+  - go get github.com/google/btree
+  - go get golang.org/x/crypto
+services:
+    - docker
+before_install:
+    - sleep 15
+    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+after_success:
+    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o jwtea
+    - sleep 5
+    - docker build -t awaseem/jwtea:$TRAVIS_BRANCH-$TRAVIS_COMMIT .
+    - sleep 5
+    - docker push awaseem/jwtea:$TRAVIS_BRANCH-$TRAVIS_COMMIT
+    - docker logout
