@@ -21,7 +21,7 @@ type TokenResponse struct {
 
 // Token custom claims for json tokens
 type Token struct {
-	Body interface{} `json:"body"`
+	Username string `json:"username"`
 	jwt.StandardClaims
 }
 

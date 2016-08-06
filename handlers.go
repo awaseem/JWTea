@@ -73,7 +73,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tokenBody := Token{
-		incomingBody,
+		incomingBody.Username,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour).Unix(),
 		},
