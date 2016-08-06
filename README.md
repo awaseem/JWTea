@@ -6,31 +6,44 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/awaseem/jwtea)](https://goreportcard.com/report/github.com/awaseem/jwtea)
 
-Simple HTTP service to create and parse JWT tokens.
+Simple HTTP service for user auth with json web tokens.
 
 ## Create
 
-To create a token simply post to `/create` with anything you'd like, JWTea will parse the information and generate
-a token for you to use.
+To create a user simply post to `/create` with a username and password, JWTea will parse the information and generate
+a new user for you.
 
 ```
 POST /create
 
 Body {
   "username": "awaseem",
-  "userPath": "/"
+  "password": "shhh!"
 }
 ```
 
-## Decode
+## Login
 
-To decode a token simply post to `/decode` with the token you'd like, JWTea will parse the token and send you back 
+To login post to `/login` with the username and password of an existing user, JWTea will parse the username and password and send you back 
 the information.
 
 ```
 POST /decode
 
 Body {
-  "token": "j389rfnf487bgaiw4g.398f9unr9w8gn.904fuin"
+  "username": "awaseem",
+  "password": "shhh!"
+}
+```
+
+## Check 
+
+To check a token to see if it's valid, post to `/check` and JWTea will send a 200 if success otherwise it failed!
+
+```
+POST /decode
+
+Body {
+  "token": "sdfjsdfjdsfkljsdfkldsjlksfjsdf"
 }
 ```
