@@ -25,6 +25,12 @@ type Token struct {
 	jwt.StandardClaims
 }
 
+// User struct for username creation
+type User struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 // Generate create a token string based on the struct data
 func (t *Token) Generate() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, t)

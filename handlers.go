@@ -7,6 +7,8 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Status handler that returns an OK
@@ -19,45 +21,81 @@ func Status(w http.ResponseWriter, r *http.Request) {
 	message.Send(w)
 }
 
-// CreateToken that creates a new token
-func CreateToken(w http.ResponseWriter, r *http.Request) {
-	// parse post body
-	var incomingBody interface{}
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		ErrorResponse(http.StatusBadRequest, "Failed to read body!", w)
+// CreateUser create new user
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	var incomingBody User
+	body, errIO := ioutil.ReadAll(r.Body)
+	if errIO != nil {
+		http.Error(w, "Failed to read body", http.StatusBadRequest)
 		return
 	}
-	// create token based on the post body as claims
-	if err := json.Unmarshal(body, &incomingBody); err != nil {
-		ErrorResponse(http.StatusBadRequest, "Failed to prase body into json!", w)
+	if errUnmarshal := json.Unmarshal(body, &incomingBody); errUnmarshal != nil {
+		http.Error(w, "Failed to prase body into json!", http.StatusBadRequest)
 		return
 	}
-	tokenHelper := Token{
+	passwordHash, errGen := bcrypt.GenerateFromPassword([]byte(incomingBody.Password), 10)
+	if errGen != nil {
+		http.Error(w, "Error failed to generate password", http.StatusInternalServerError)
+		return
+	}
+	errSet := Set(incomingBody.Username, passwordHash)
+	if errSet != nil {
+		http.Error(w, "Failed to store username and password for user creation!", http.StatusBadRequest)
+		return
+	}
+	resMessage := Message{
+		Success: true,
+		Message: "Created User!",
+	}
+	resMessage.Send(w)
+}
+
+// Login create token bsaed on username and password
+func Login(w http.ResponseWriter, r *http.Request) {
+	var incomingBody User
+	body, errIO := ioutil.ReadAll(r.Body)
+	if errIO != nil {
+		http.Error(w, "Failed to read body", http.StatusBadRequest)
+		return
+	}
+	if errUnmarshal := json.Unmarshal(body, &incomingBody); errUnmarshal != nil {
+		http.Error(w, "Failed to prase body into json!", http.StatusBadRequest)
+		return
+	}
+	password, errGet := Get(incomingBody.Username)
+	if errGet != nil {
+		http.Error(w, "Failed to find user", http.StatusBadRequest)
+		return
+	}
+	errComPass := bcrypt.CompareHashAndPassword(password, []byte(incomingBody.Password))
+	if errComPass != nil {
+		http.Error(w, "Failed to compare password", http.StatusBadRequest)
+		return
+	}
+	tokenBody := Token{
 		incomingBody,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour).Unix(),
 		},
 	}
-	token, err := tokenHelper.Generate()
-	if err != nil {
-		ErrorResponse(http.StatusBadRequest, "Failed to create token!", w)
+	token, errToken := tokenBody.Generate()
+	if errToken != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
 	}
-	// generate request message payload
 	resMessage := Message{
 		Success: true,
 		Message: "Created Token!",
 		Payload: TokenResponse{
 			Token:  token,
-			Expiry: tokenHelper.ExpiresAt,
+			Expiry: tokenBody.ExpiresAt,
 		},
 	}
 	resMessage.Send(w)
 }
 
-// DecodeToken parses token string and sends it back as a response
-func DecodeToken(w http.ResponseWriter, r *http.Request) {
+// CheckUser check if token is valid
+func CheckUser(w http.ResponseWriter, r *http.Request) {
 	// parse post body
 	var incomingToken TokenRequest
 	body, err := ioutil.ReadAll(r.Body)
