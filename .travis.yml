@@ -7,6 +7,7 @@ install:
   - go get github.com/gorilla/context
   - go get github.com/dgrijalva/jwt-go
   - go get github.com/peterbourgon/diskv
+  - go get golang.org/x/crypto/bcrypt
 services:
     - docker
 before_install:
