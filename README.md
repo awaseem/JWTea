@@ -41,7 +41,7 @@ Body {
 To check a token to see if it's valid, post to `/check` and JWTea will send a 200 if success otherwise it failed!
 
 ```
-POST /decode
+POST /check
 
 Body {
   "token": "sdfjsdfjdsfkljsdfkldsjlksfjsdf"
