@@ -1,5 +1,5 @@
 {
-  "name": "jwtea",
+  "name": "api",
   "description": "JWT Auth service",
   "memory": 256,
   "timeout": 10
