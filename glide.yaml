@@ -9,3 +9,4 @@ import:
   subpackages:
   - bcrypt
 - package: github.com/aws/aws-sdk-go
+- package: github.com/apex/go-apex

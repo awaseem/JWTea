@@ -1,0 +1,8 @@
+{
+  "name": "jwtea",
+  "description": "auth service for personal applications",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::425946725474:role/jwtea_lambda_function",
+  "environment": {}
+}
