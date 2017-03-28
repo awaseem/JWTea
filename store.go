@@ -1,36 +1,57 @@
 package main
 
 import (
-	"errors"
+	"bytes"
 
-	"github.com/peterbourgon/diskv"
+	"io/ioutil"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-var d *diskv.Diskv
+const (
+	bucketJWTea = "jwtea"
+	region      = "us-west-2"
+)
+
+var svc *s3.S3
 
 // Initialize start store
 func Initialize() {
-	flatTransform := func(s string) []string { return []string{} }
-	d = diskv.New(diskv.Options{
-		BasePath:     "data",
-		Transform:    flatTransform,
-		CacheSizeMax: 1024 * 1024,
-	})
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String(region),
+	}))
+	svc = s3.New(sess)
 }
 
 // Set set datastore value
 func Set(key string, value []byte) error {
-	if d.Has(key) {
-		return errors.New("value already exists")
+	params := &s3.PutObjectInput{
+		Bucket: aws.String(bucketJWTea), // Required
+		Key:    aws.String(key),         // Required
+		Body:   bytes.NewReader(value),
 	}
-	errWrite := d.Write(key, value)
-	if errWrite != nil {
-		return errWrite
+	_, err := svc.PutObject(params)
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 // Get datastore value
 func Get(key string) ([]byte, error) {
-	return d.Read(key)
+	params := &s3.GetObjectInput{
+		Bucket: aws.String(bucketJWTea),
+		Key:    aws.String(key),
+	}
+	resp, err := svc.GetObject(params)
+	if err != nil {
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
