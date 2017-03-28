@@ -28,8 +28,8 @@ func Initialize() {
 // Set set datastore value
 func Set(key string, value []byte) error {
 	params := &s3.PutObjectInput{
-		Bucket: aws.String(bucketJWTea), // Required
-		Key:    aws.String(key),         // Required
+		Bucket: aws.String(bucketJWTea),
+		Key:    aws.String(key),
 		Body:   bytes.NewReader(value),
 	}
 	_, err := svc.PutObject(params)
